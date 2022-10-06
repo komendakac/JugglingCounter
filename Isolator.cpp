@@ -13,8 +13,7 @@ int Isolator::get_upper_bound(int color, int max){
 
 
 int Isolator::get_lower_bound(int color){
-    return color - hsv_range < 0 ? 0 : color - hsv_range;
-
+    return color - hsv_range < 0 ? 0 : color - hsv_range;x
 }
 
 

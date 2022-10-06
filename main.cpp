@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
             }
         }
         if (contours_number == balls_number){
-            balls_positions.emplace_back(centroids); 
+            balls_positions.emplace_back(centroids);
             balls_positions.pop_front();
             if (dequeue_size <= 3)
                 dequeue_size++;
