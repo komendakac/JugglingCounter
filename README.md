@@ -1,7 +1,7 @@
 # JugglingCounter
 App that counts juggling throws using opencv
 
-Currently under development, I want to add better user interface and some features. Below video with a current state of a program.
+Currently under development, I want to add better user interface and some features. Below video with a current state of a program.Video link below
 [![Watch the video](https://img.youtube.com/vi/ZI61cuI84gA/maxresdefault.jpg)](https://www.youtube.com/watch?v=ZI61cuI84gA)
 
 
