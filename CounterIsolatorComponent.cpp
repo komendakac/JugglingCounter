@@ -2,26 +2,25 @@
 // Created by kacper on 04.10.22.
 //
 
-#include "Isolator.h"
+#include "CounterIsolatorComponent.h"
 
 #include <utility>
 const int hsv_range = 32;
 
-int Isolator::get_upper_bound(int color, int max){
+int CounterIsolatorComponent::get_upper_bound(int color, int max){
     return color + hsv_range > max ? max : color + hsv_range;
 }
 
 
-int Isolator::get_lower_bound(int color){
+int CounterIsolatorComponent::get_lower_bound(int color){
     return color - hsv_range < 0 ? 0 : color - hsv_range;
 }
 
 
-cv::Mat Isolator::get_isolated_balls(const cv::Mat& picture) {
+cv::Mat CounterIsolatorComponent::get_isolated_balls(const cv::Mat& picture) {
     cv::Mat picture_hsv;
 
     cv::cvtColor(picture, picture_hsv, cv::COLOR_BGR2HSV);
-
     std::vector<cv::Mat> frames_threshold;
     for (auto & threshold_color : colors) {
         int hl = get_lower_bound(threshold_color[0]);
@@ -32,7 +31,7 @@ cv::Mat Isolator::get_isolated_balls(const cv::Mat& picture) {
         int vu = get_upper_bound(threshold_color[2]);
 
         cv::Mat frame_threshold;
-        cv::inRange(picture,
+        cv::inRange(picture_hsv,
                     cv::Scalar(hl, sl, vl),
                     cv::Scalar(hu, su, vu),
                     frame_threshold);
@@ -46,7 +45,7 @@ cv::Mat Isolator::get_isolated_balls(const cv::Mat& picture) {
         mask = new_mask;
     }
     cv::Mat balls;
-    cv::bitwise_and(picture, picture, balls, mask);
+    cv::bitwise_and(picture_hsv, picture_hsv, balls, mask);
     int morph_size = 5;
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_CROSS,
                                                cv::Size(morph_size * 2 + 1, morph_size * 2 + 1),
@@ -66,5 +65,10 @@ cv::Mat Isolator::get_isolated_balls(const cv::Mat& picture) {
 }
 
 
-Isolator::Isolator(std::vector<cv::Vec3b> colors) :colors(std::move(colors)){
+CounterIsolatorComponent::CounterIsolatorComponent(std::vector<cv::Vec3b> colors) : colors(std::move(colors)){
+}
+
+
+void CounterIsolatorComponent::update(Counter &counter, cv::Mat &frame) {
+    counter.current_frame = get_isolated_balls(frame);
 }

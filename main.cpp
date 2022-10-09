@@ -2,16 +2,18 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include "InputReader.h"
-#include "Isolator.h"
+#include "CounterIsolatorComponent.h"
+#include "CounterCountingComponent.h"
+#include "CounterDrawingComponent.h"
 
 cv::RNG rng(12345);
+static int low_line_position = 800;
 static int min_ball_area = 350;
 static int max_ball_area = 3500;
 static int high_line_position = 0;
-static int low_line_position = 800;
 
-int count_balls(std::deque<std::vector<std::pair<int, int>>>);
-double count_distance(std::pair<int, int>, std::pair<int, int>);
+/*int count_balls(std::deque<std::vector<std::pair<int, int>>>);
+double count_distance(std::pair<int, int>, std::pair<int, int>);*/
 
 
 int main(int argc, char** argv) {
@@ -27,25 +29,31 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE);// Create a window for display.
+    cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE);
 
     cv::Mat frame;
     cap >> frame;
 
-    std::deque<std::vector<std::pair<int, int>>> balls_positions;
-    unsigned balls_number = input.get_balls_number();
+    //std::deque<std::vector<std::pair<int, int>>> balls_positions;
+    /*unsigned balls_number = input.get_balls_number();
 
     for (int i = 0; i < 3; i++) {
         balls_positions.emplace_back(std::vector<std::pair<int, int>>());
     }
-    int counter = 0;
+    int counter = 0;*/
 
     std::vector<cv::Vec3b> colors = input.get_colors();
-    Isolator isolator(colors);
-    unsigned frames_since_start = 0;
-    int dequeue_size = 0;
+    Counter counter(new CounterIsolatorComponent(colors),
+                    new CounterCountingComponent(low_line_position, min_ball_area,
+                                                 max_ball_area, high_line_position),
+                    new CounterDrawingComponent(low_line_position, min_ball_area,
+                                                max_ball_area, high_line_position),
+                    input.get_balls_number());
+    /*unsigned frames_since_start = 0;
+    int dequeue_size = 0;*/
     while (!frame.empty()) {
-        frames_since_start++;
+        counter.update(frame);
+        /*frames_since_start++;
 
         cv::Mat threshold_image = isolator.get_isolated_balls(frame);
 
@@ -121,12 +129,12 @@ int main(int argc, char** argv) {
 
 
         cv::Mat concat;
-        cv::hconcat(modified_frame, drawing, concat);
+        cv::hconcat(modified_frame, drawing, concat);*/
         cap >> frame;
 
-        cv::imshow("Display window", concat);
+        //cv::imshow("Display window", concat);
 
-        cv::waitKey(1);
+        //cv::waitKey(1);
     }
     cap.release();
     cv::destroyAllWindows();
@@ -134,7 +142,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-int count_balls(std::deque<std::vector<std::pair<int, int>>> balls_positions){
+/*int count_balls(std::deque<std::vector<std::pair<int, int>>> balls_positions){
     auto current = balls_positions.begin();
     auto previous = current;
     previous++;
@@ -142,23 +150,23 @@ int count_balls(std::deque<std::vector<std::pair<int, int>>> balls_positions){
     last++;
     int counted_balls = 0;
     for (auto element : *last){
-    std::pair<int, int> closest_of_curr;
-    std::pair<int, int> closest_of_prev;
-    for (unsigned i = 0; i < (*previous).size(); i++){
-        if (count_distance(element, (*previous)[i]) < count_distance(closest_of_prev, element)) {
-            closest_of_prev = (*previous)[i];
+        std::pair<int, int> closest_of_curr;
+        std::pair<int, int> closest_of_prev;
+        for (unsigned i = 0; i < (*previous).size(); i++){
+            if (count_distance(element, (*previous)[i]) < count_distance(closest_of_prev, element)) {
+                closest_of_prev = (*previous)[i];
+            }
+            if (count_distance(element, (*current)[i]) < count_distance(closest_of_curr, element)) {
+                closest_of_curr = (*current)[i];
+            }
         }
-        if (count_distance(element, (*current)[i]) < count_distance(closest_of_curr, element)) {
-            closest_of_curr = (*current)[i];
+        if (element.second < low_line_position &&
+            closest_of_prev.second > low_line_position &&
+            closest_of_curr.second > low_line_position){
+            counted_balls++;
         }
-    }
-    if (element.second < low_line_position &&
-        closest_of_prev.second > low_line_position &&
-        closest_of_curr.second > low_line_position){
-        counted_balls++;
-    }
-    closest_of_prev = std::make_pair(-100, -100);
-    closest_of_curr = std::make_pair(-100, -100);
+        closest_of_prev = std::make_pair(-100, -100);
+        closest_of_curr = std::make_pair(-100, -100);
     }
     return counted_balls;
 }
@@ -168,5 +176,4 @@ double count_distance(std::pair<int, int> first, std::pair<int, int> second){
         return DBL_MAX;
     }
     return sqrt(pow(first.first - second.first, 2) + pow(first.second- second.second, 2));
-}
-
+}*/

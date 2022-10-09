@@ -3,7 +3,11 @@ project(jugglingfirst)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(jugglingfirst main.cpp ColorPicker.cpp ColorPicker.h InputReader.cpp InputReader.h Isolator.cpp Isolator.h)
+add_executable(jugglingfirst main.cpp ColorPicker.cpp ColorPicker.h InputReader.cpp InputReader.h
+        CounterIsolatorComponent.cpp CounterIsolatorComponent.h IsolatorComponent.h IsolatorComponent.cpp
+        CounterCountingComponent.cpp CounterCountingComponent.h  CountingComponent.h
+        CounterDrawingComponent.cpp CounterDrawingComponent.h  DrawingComponent.h
+        Counter.h Counter.cpp)
 
 
 

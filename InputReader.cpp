@@ -17,10 +17,8 @@ InputReader::InputReader(int argc, char** argv): options("Allowed options"), bal
     po::notify(vm);
 
     balls_image.open(balls_image_dir);
-    if( !balls_image.isOpened() ) { // check if we succeeded
-        //std::cerr << "Couldn't open capture." << std::endl;
-        //TODO exception handling
-        throw "can't read image";
+    if( !balls_image.isOpened() ) {
+        exit(-1);
     }
     cv::Mat image;
     balls_image >> image;
