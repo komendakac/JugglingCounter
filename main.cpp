@@ -34,11 +34,12 @@ int main(int argc, char** argv) {
 
 
     std::vector<cv::Vec3b> colors = input.get_colors();
-    Counter counter(new CounterIsolatorComponent(colors),
-                    new CounterCountingComponent(low_line_position, min_ball_area,
-                                                 max_ball_area, high_line_position),
-                    new CounterDrawingComponent(low_line_position, min_ball_area,
-                                                max_ball_area, high_line_position),
+    IsolatorComponent *isolator = new CounterIsolatorComponent(colors);
+    CountingComponent *counting = new CounterCountingComponent(low_line_position, min_ball_area,
+                                                               max_ball_area, high_line_position);
+    DrawingComponent *drawing = new CounterDrawingComponent(low_line_position, min_ball_area,
+                                                            max_ball_area, high_line_position);
+    Counter counter(isolator, counting, drawing,
                     input.get_balls_number());
 
     while (!frame.empty()) {
@@ -47,6 +48,9 @@ int main(int argc, char** argv) {
         cap >> frame;
 
     }
+    delete isolator;
+    delete counting;
+    delete drawing;
     cap.release();
     cv::destroyAllWindows();
 
