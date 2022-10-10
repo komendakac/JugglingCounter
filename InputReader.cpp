@@ -47,7 +47,7 @@ bool InputReader::is_markers() const {
 
 
 void InputReader::read_colors(cv::Mat &frame){
-    cv::namedWindow(window_name, cv::WINDOW_AUTOSIZE);// Create a window for display.
+    cv::namedWindow(window_name, cv::WINDOW_AUTOSIZE);
     ColorPicker cp(&frame);
     cv::imshow(window_name, frame);
     cv::setMouseCallback(window_name, ColorPicker::getMouseCoordinates, &cp);
