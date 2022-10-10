@@ -12,6 +12,7 @@ CounterCountingComponent::CounterCountingComponent(const int low_line_position, 
 
 }
 
+
 void CounterCountingComponent::update(Counter &counter, std::vector<std::vector<cv::Point>> &contours) {
     std::vector<std::pair<int, int>> centroids;
      contours_number = 0;
@@ -42,6 +43,7 @@ void CounterCountingComponent::update(Counter &counter, std::vector<std::vector<
     }
 }
 
+
 int CounterCountingComponent::count_balls(std::deque<std::vector<std::pair<int, int>>> balls_positions){
     auto current = balls_positions.begin();
     auto previous = current;
@@ -53,27 +55,39 @@ int CounterCountingComponent::count_balls(std::deque<std::vector<std::pair<int, 
         std::pair<int, int> closest_of_curr;
         std::pair<int, int> closest_of_prev;
         for (unsigned i = 0; i < (*previous).size(); i++){
-            if (count_distance(element, (*previous)[i]) <
-                count_distance(closest_of_prev, element)) {
-                closest_of_prev = (*previous)[i];
-            }
-            if (count_distance(element, (*current)[i]) <
-                count_distance(closest_of_curr, element)) {
-                closest_of_curr = (*current)[i];
-            }
+            set_closer(element, (*previous)[i], closest_of_prev);
+            set_closer(element, (*current)[i], closest_of_curr);
         }
-        if (element.second < low_line_position &&
-            closest_of_prev.second > low_line_position &&
-            closest_of_curr.second > low_line_position){
-            counted_balls++;
-        }
+        count_if_crossed_line(closest_of_curr.second, closest_of_prev.second,
+                              element.second, low_line_position, counted_balls);
         closest_of_prev = std::make_pair(-100, -100);
         closest_of_curr = std::make_pair(-100, -100);
     }
     return counted_balls;
 }
 
-double CounterCountingComponent::count_distance(std::pair<int, int> first, std::pair<int, int> second){
+
+void CounterCountingComponent::count_if_crossed_line(const int &current,const int &previous,
+                                                     const int &third, const int &line_position,
+                                                     int &counter) const{
+    if (third < low_line_position &&
+        previous > low_line_position &&
+        current > low_line_position){
+        counter++;
+    }
+}
+
+
+void CounterCountingComponent::set_closer(std::pair<int, int> &first, std::pair<int, int> &second,
+                                          std::pair<int, int> &current){
+    if (count_distance(first, second) <
+        count_distance(current, first)) {
+        current = second;
+    }
+}
+
+
+double CounterCountingComponent::count_distance(std::pair<int, int> &first, std::pair<int, int> &second){
     if (first.first == -1 || second.first == -1){
         return DBL_MAX;
     }
