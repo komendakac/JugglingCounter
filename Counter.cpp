@@ -5,11 +5,14 @@
 #include "Counter.h"
 
 
-Counter::Counter(IsolatorComponent *isolatorComponent, CountingComponent *countingComponent,
-                 DrawingComponent *drawingComponent, unsigned balls_number) :
+Counter::Counter(std::shared_ptr<IsolatorComponent> isolatorComponent,
+                 std::shared_ptr<CountingComponent> countingComponent,
+                 std::shared_ptr<DrawingComponent> drawingComponent, unsigned balls_number) :
             frames_since_start(0), counter(0), dequeue_size(0),
-            countingComponent(countingComponent), drawingComponent(drawingComponent),
-            isolatorComponent(isolatorComponent), balls_number(balls_number) {
+            countingComponent(std::move(countingComponent)),
+            drawingComponent(std::move(drawingComponent)),
+            isolatorComponent(std::move(isolatorComponent)),
+            balls_number(balls_number) {
     for (int i = 0; i < 3; i++) {
         balls_positions.emplace_back(std::vector<std::pair<int, int>>());
     }

@@ -5,12 +5,13 @@
 #include "CounterIsolatorComponent.h"
 #include "CounterCountingComponent.h"
 #include "CounterDrawingComponent.h"
+#include <memory>
 
-cv::RNG rng(12345);
-static int low_line_position = 800;
-static int min_ball_area = 350;
-static int max_ball_area = 3500;
-static int high_line_position = 0;
+
+const int low_line_position = 800;
+const int min_ball_area = 350;
+const int max_ball_area = 3500;
+const int high_line_position = 0;
 
 
 
@@ -34,11 +35,15 @@ int main(int argc, char** argv) {
 
 
     std::vector<cv::Vec3b> colors = input.get_colors();
-    IsolatorComponent *isolator = new CounterIsolatorComponent(colors);
-    CountingComponent *counting = new CounterCountingComponent(low_line_position, min_ball_area,
-                                                               max_ball_area, high_line_position);
-    DrawingComponent *drawing = new CounterDrawingComponent(low_line_position, min_ball_area,
-                                                            max_ball_area, high_line_position);
+    std::shared_ptr<IsolatorComponent> isolator = std::make_shared<CounterIsolatorComponent>(colors);
+    std::shared_ptr<CountingComponent> counting = std::make_shared<CounterCountingComponent>(low_line_position,
+                                                                                             min_ball_area,
+                                                                                             max_ball_area,
+                                                                                             high_line_position);
+    std::shared_ptr<DrawingComponent> drawing = std::make_shared<CounterDrawingComponent>(low_line_position,
+                                                                                          min_ball_area,
+                                                                                          max_ball_area,
+                                                                                          high_line_position);
     Counter counter(isolator, counting, drawing,
                     input.get_balls_number());
 
@@ -48,9 +53,6 @@ int main(int argc, char** argv) {
         cap >> frame;
 
     }
-    delete isolator;
-    delete counting;
-    delete drawing;
     cap.release();
     cv::destroyAllWindows();
 
